@@ -1,0 +1,68 @@
+job "jenkins_agent" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "jenkins_agent" {
+
+    network {
+      mode = "host"
+      port "ssh" {
+        static = 2222
+        to = 22
+      }
+    }
+
+    update {
+      max_parallel      = 1
+      min_healthy_time  = "15s"
+      healthy_deadline  = "15m"
+      progress_deadline = "20m"
+      auto_revert       = false
+    }
+
+    task "jenkins_agent" {
+
+      driver = "docker"
+      config {
+        image = "alexchub/jenkins-ssh-agent:latest-jdk11"
+        auth {
+          username = "alexchub"
+          password = "618a851c-2b1a-4485-994c-fb48b70407fc"
+        }
+        ports = ["ssh"]
+        volumes = [
+            "/var/run/docker.sock:/var/run/docker.sock",
+            "/bin/docker:/usr/bin/docker"
+        ]
+      }
+
+      env {
+        JENKINS_AGENT_SSH_PUBKEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDoi2daMDZJ6IUgFmw6hPr5w1qyjmaUqQDydyLVPxpiB7miIgybWeNVyBOVDZFVwRIfbjify5Wk8inpmqP/mHKTEFRHnMrPw1XMbn5/MzO0nnzKSKiE6SSZM4rdm5Zqn56Gal4ks/FzRSoVCdxSMQkqfNywfIf9x9VsZhwimLA/c2s285wb/cELzP33QSfvbps2e4uwEB4z7UjdcC9+C651i1/F/bRewwCHektCsOpgz+DjvkQlojhUFFV9Lg3PQ4PZspISDQf20Fsln+oQRVWMsY0Yo7F83aa9Kj1qG1L6BM5xrDoQNRNKglpc9qWOAzRc7I2HB01QYTJZNggMxR5SdMXlgD8yah1KQbxSa6JxixLpHNCyUBJQB+OQrSLCiMCHk4SEtIl5ExpQEAGrNQzkiz5Ym6cGLhNSUqEtlVqP3smH22Hv4FD0bDV5gyS8oU/cpL0eE9rBH72lGqcaZU9RBZylcrAbxUdoComBZr1h6FE2xOfBu6hbUpHHz4FhucE="
+      }
+
+      service {
+        tags = ["jenkins-agent", "jenkins-agent.service.consul"]
+        name = "jenkins-agent"
+        port = "ssh"
+        check {
+          type     = "tcp"
+          port     = "ssh"
+          interval = "10s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 300  # MHz
+        memory = 300 # Mb
+      }
+
+    } # task end
+  }   # group end
+}     # job end

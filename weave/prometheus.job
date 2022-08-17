@@ -1,0 +1,109 @@
+#Version 1.1
+#HCL 2
+job "prometheus" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "prometheus" {
+    count = 1
+    network {
+      mode = "host"
+      port "http" {
+        to = 9090
+      }
+    }
+
+    update {
+      max_parallel      = 1
+      min_healthy_time  = "15s"
+      healthy_deadline  = "15m"
+      progress_deadline = "20m"
+      auto_revert       = false
+    }
+
+    task "prometheus" {
+
+      driver = "docker"
+      config {
+        image        = "prom/prometheus:latest"
+        network_mode = "weave"
+        network_aliases = [
+          "${NOMAD_TASK_NAME}",
+        ]
+        force_pull = true
+        auth {
+          username = ""
+          password = ""
+        }
+        ports = ["http"]
+        mounts = [
+          {
+            type     = "volume"
+            target   = "/etc/prometheus"
+            source   = "ceph-prometheus-config"
+            readonly = false
+            volume_options = [
+              {
+                no_copy = false
+                driver_config = [
+                  {
+                    name = "local-persist"
+                    options = [
+                      {
+                        mountpoint = "/mnt/mycephfs/docker/volumes/ceph-prometheus-config/_data"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type     = "volume"
+            target   = "/var/lib/prometheus"
+            source   = "ceph-prometheus-data"
+            readonly = false
+            volume_options = [
+              {
+                no_copy = false
+                driver_config = [
+                  {
+                    name = "local-persist"
+                    options = [
+                      {
+                        mountpoint = "/mnt/mycephfs/docker/volumes/ceph-prometheus-data/_data"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+
+      service {
+        tags = ["web", "prometheus.service.consul"]
+        name = "prometheus"
+        port = "http"
+        check {
+          type     = "tcp"
+          port     = "http"
+          interval = "10s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 100 # MHz
+        memory = 100 # Mb
+      }
+    } # task end
+  }   # end group
+}     # job end

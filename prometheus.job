@@ -1,0 +1,104 @@
+job "prometheus" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "prometheus" {
+    count = 1
+    network {
+      port "http" {
+        to = 9090
+      }
+    }
+
+    task "prometheus" {
+      driver = "docker"
+      config {
+        image      = "prom/prometheus:latest"
+        force_pull = true
+        auth {
+          username = ""
+          password = ""
+        }
+        ports = ["http"]
+
+        mounts = [
+          {
+            type     = "volume"
+            target   = "/etc/prometheus"
+            source   = "ceph-prometheus-config"
+            readonly = false
+            volume_options = [
+              {
+                no_copy = false
+                driver_config = [
+                  {
+                    name = "local-persist"
+                    options = [
+                      {
+                        mountpoint = "/mnt/mycephfs/docker/volumes/ceph-prometheus-config/_data"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type     = "volume"
+            target   = "/var/lib/prometheus"
+            source   = "ceph-prometheus-data"
+            readonly = false
+            volume_options = [
+              {
+                no_copy = false
+                driver_config = [
+                  {
+                    name = "local-persist"
+                    options = [
+                      {
+                        mountpoint = "/mnt/mycephfs/docker/volumes/ceph-prometheus-data/_data"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+
+      service {
+        name = "prometheus"
+        tags = ["urlprefix-/prometheus"]
+        port = "http"
+        check {
+          name = "alive"  
+          type = "http" 
+          path = "/"  
+          interval = "10s"
+          timeout  = "5s"
+        }
+      }
+
+      restart {  
+        attempts = 2  
+        interval = "30m"  
+        delay = "15s"  
+        mode = "fail"
+      }
+
+      resources {
+        cpu    = 100 # MHz
+        memory = 100 # Mb
+      }
+
+    } # task end
+  }   # group end
+}     # job end
+

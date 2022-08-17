@@ -1,0 +1,67 @@
+job "fabio" {
+  datacenters = ["dc1"]
+  type        = "system"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "fabio" {
+    restart {
+      attempts = 6
+      interval = "3m"
+      delay    = "30s"
+      mode     = "fail"
+    }
+
+    task "fabio" {
+      driver = "docker"
+      config {
+        port_map = {
+          http      = 80
+          ui        = 9998
+          https     = 443
+          dockerhub = 5000
+        }
+        image        = "fabiolb/fabio"
+        network_mode = "host"
+        volumes = [
+          "/mnt/mycephfs/apps/config/fabio/:/etc/fabio/",
+        ]
+
+      }
+      service {
+        tags = ["fabio", "fabio.service.consul"]
+        name = "fabio"
+        port = "ui"
+        check {
+          type     = "tcp"
+          port     = "ui"
+          interval = "30s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 200
+        memory = 128
+        network {
+          mbits = 20
+          port "http" {
+            static = 80
+          }
+          port "ui" {
+            static = 9998
+          }
+          port "https" {
+            static = 443
+          }
+          port "dockerhub" {
+            static = 5000
+          }
+        }
+      }
+    }
+  }
+}

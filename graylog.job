@@ -1,0 +1,56 @@
+job "graylog" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "graylog" {
+    count = 1
+    network {
+      mode = "host"
+      port "http" {
+        to = 9000
+      }  
+    }
+
+    update {
+      max_parallel      = 1
+      min_healthy_time  = "15s"
+      healthy_deadline  = "15m"
+      progress_deadline = "20m"
+      auto_revert       = false
+    }
+
+    task "graylog" {
+
+      driver = "docker"
+      config {
+        image = "graylog/graylog:4.3"
+        force_pull = true
+        ports = ["http"]
+      }
+
+      service {
+        tags = ["urlprefix-/graylog"]
+        name = "graylog"
+        port = "http"
+        check {
+          type     = "tcp"
+          port     = "http"
+          interval = "10s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 500  # MHz
+        memory = 300 # Mb
+      }
+
+    } # task end
+  }   # group end
+}     # job end

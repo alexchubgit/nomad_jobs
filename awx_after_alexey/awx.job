@@ -1,0 +1,139 @@
+job "awx" {
+
+  datacenters = ["dc1"]
+  type     = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "awx" {
+    count = 1
+    network {
+      port "postgres" { 
+        static = 5432
+      }
+      port "memcached" { 
+        static = 11211
+      }
+      port "rabbit_ui" {
+        static = 15672
+      }
+      port "rabbit_ampq" {
+        static = 5672
+      }
+    }
+
+    task "postgres" {
+      driver = "docker"
+      config {
+        image = "postgres:10"
+        hostname="postgres"
+        ports = ["postgres"]
+        volumes = [
+          "/awx/postgres/10/data:/var/lib/postgresql/data/pgdata",
+        ]
+      }
+
+      env {
+        POSTGRES_USER     = "awx"
+        POSTGRES_PASSWORD = "awxpass"
+        POSTGRES_DB       = "awx"
+        PGDATA            = "/var/lib/postgresql/data/pgdata"
+      }
+
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+
+    } # end task postgres
+
+    task "memcached" {
+      driver = "docker"
+      config {
+        image = "memcached:alpine"
+        hostname="memcached"
+        ports = ["memcached"]
+      }
+
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+
+    } # end task memcached
+
+    task "rabbitmq" {
+      driver = "docker"
+      config {
+        image = "ansible/awx_rabbitmq:3.7.4"
+        hostname = "rabbitmq"
+        ports = ["rabbit_ui", "rabbit_ampq"]
+      }
+
+      env {
+        RABBITMQ_DEFAULT_VHOST = "awx"
+        RABBITMQ_DEFAULT_USER = "guest"
+        RABBITMQ_DEFAULT_PASS = "awxpass"
+        RABBITMQ_ERLANG_COOKIE = cookiemonster
+      }
+
+      resources {
+        cpu    = 300
+        memory = 300
+      }
+
+    } # end task rabbitmq
+
+    task "awx_task" {
+      driver = "docker"
+      config {
+        image = "ansible/awx_task:9.2.0"
+        hostname = "awx"
+        volumes = [
+          "local/SECRET_KEY:/etc/tower/SECRET_KEY",
+          "local/environment.sh:/etc/tower/conf.d/environment.sh",
+          "local/credentials.py:/etc/tower/conf.d/credentials.py",
+          "/awx/projects:/var/lib/awx/projects"
+        ]
+      }
+
+      # Required on disk. Will download all files to default allocation folder
+      artifact {
+        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx_after_alexey"
+      }
+
+      env {
+
+      }
+
+      resources {
+        cpu    = 300
+        memory = 300
+      }
+
+    } # end task awx_task
+
+
+  } # end group
+} # end job
+
+
+
+
+
+##Postgres
+#psql -U awx -h 192.168.56.62
+
+##Memcached
+#telnet 192.168.56.62 11211 and for exit Ctrl + ]
+##Memcached testing
+#add mykey 0 60 11
+#hello world
+#STORED
+#get mykey
+#VALUE mykey 0 11
+#hello world
+#END
