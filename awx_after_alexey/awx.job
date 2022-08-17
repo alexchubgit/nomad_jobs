@@ -102,7 +102,7 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx"
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_after_alexey"
       }
 
       env {
