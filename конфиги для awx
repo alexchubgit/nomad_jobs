@@ -1,7 +1,0 @@
-TASK [local_docker : Create Docker Compose Configuration] *********************************************************************************************************************************************************
-ok: [localhost] => (item={'file': 'environment.sh', 'mode': '0600'})
-changed: [localhost] => (item={'file': 'credentials.py', 'mode': '0600'})
-ok: [localhost] => (item={'file': 'docker-compose.yml', 'mode': '0600'})
-ok: [localhost] => (item={'file': 'nginx.conf', 'mode': '0600'})
-ok: [localhost] => (item={'file': 'redis.conf', 'mode': '0664'})
-
