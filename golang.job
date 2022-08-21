@@ -13,13 +13,10 @@ job "golang-app" {
     }
 
     task "golang-app" {
-      # The "driver" parameter specifies the task driver that should be used to
-      # run the task.
       driver = "docker"
 
       config {
         image = "golang:latest"
-
         ports = ["http"]
       }
 
