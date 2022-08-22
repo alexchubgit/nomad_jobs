@@ -11,35 +11,139 @@ job "awx" {
   group "awx" {
     count = 1
     network {
+      port "postgres" { 
+        static = 5432
+      }
+      port "memcached" { 
+        static = 11211
+      }
+      port "rabbit_ui" {
+        static = 15672
+      }
+      port "rabbit_ampq" {
+        static = 5672
+      }
       port "http" {
         static = 80
         to     = 8052
-      }
-      port "postgres" { 
-        static = 5432 
-      }
-      port "rabbitmq_amqp" { 
-        static = 5672  
-      }
-      port "rabbitmq_admin" { 
-        static = 15672 
-      }
-      port "rabbitmq_cluster" { 
-        static = 25672 
-      }
-      port "memcached" { 
-        static = 11211 
       }
       port "adminer" { 
         static = 8080 
       }
     }
 
-    task "awxweb" {
+    task "postgres" {
       driver = "docker"
       config {
-        image = "ansible/awx_web:11.2.0"
-        hostname = "awxweb"
+        image = "postgres:10"
+        hostname="postgres"
+        ports = ["postgres"]
+        volumes = [
+          "/awx/postgres/10/data:/var/lib/postgresql/data/pgdata",
+        ]
+      }
+
+      env {
+        POSTGRES_USER     = "awx"
+        POSTGRES_PASSWORD = "awxpass"
+        POSTGRES_DB       = "awx"
+        PGDATA            = "/var/lib/postgresql/data/pgdata"
+      }
+
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+
+    } # end task postgres
+
+    task "memcached" {
+      driver = "docker"
+      config {
+        image = "memcached:alpine"
+        hostname="memcached"
+        ports = ["memcached"]
+      }
+
+      resources {
+        cpu    = 200
+        memory = 200
+      }
+ 
+    } # end task memcached
+
+    task "rabbitmq" {
+      driver = "docker"
+      config {
+        image = "ansible/awx_rabbitmq:3.7.4"
+        hostname = "rabbitmq"
+        ports = ["rabbit_ui", "rabbit_ampq"]
+      }
+
+      env {
+        RABBITMQ_DEFAULT_VHOST = "awx"
+        RABBITMQ_DEFAULT_USER = "guest"
+        RABBITMQ_DEFAULT_PASS = "awxpass"
+        RABBITMQ_ERLANG_COOKIE = cookiemonster
+      }
+
+      resources {
+        cpu    = 300
+        memory = 300
+      }
+
+    } # end task rabbitmq
+
+    task "awx_task" {
+      driver = "docker"
+      config {
+        image = "ansible/awx_task:9.2.0"
+        hostname = "awx"
+        volumes = [
+          "local/SECRET_KEY:/etc/tower/SECRET_KEY",
+          "local/environment.sh:/etc/tower/conf.d/environment.sh",
+          "local/credentials.py:/etc/tower/conf.d/credentials.py",
+          "/awx/projects:/var/lib/awx/projects"
+        ]
+      }
+
+      # Required on disk. Will download all files to default allocation folder
+      artifact {
+        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx_unknown"
+      }
+
+      env {
+        AWX_ADMIN_USER     = "admin"
+        AWX_ADMIN_PASSWORD = "password"
+
+        DATABASE_NAME     = "awx"
+        DATABASE_USER     = "awx"
+        DATABASE_PASSWORD = "awxpass"
+        DATABASE_HOST     = "${NOMAD_HOST_IP_postgres}"
+        DATABASE_PORT     = "${NOMAD_PORT_postgres}"
+
+        RABBITMQ_VHOST      = "awx"
+        RABBITMQ_USER       = "awx"
+        RABBITMQ_PASSWORD   = "awx_rabbit"
+        RABBITMQ_HOST       = "${NOMAD_HOST_IP_rabbitmq_amqp}"
+        RABBITMQ_PORT       = "${NOMAD_PORT_rabbitmq_amqp}"
+
+        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
+        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
+      }
+
+      resources {
+        cpu    = 1000
+        memory = 1000
+      }
+
+    } # end task awx_task
+
+    task "awx_web" {
+      driver = "docker"
+      config {
+        image = "ansible/awx_web:9.2.0"
+        hostname = "web"
         ports = ["http"]
         volumes = [
           "local/SECRET_KEY:/etc/tower/SECRET_KEY",
@@ -52,7 +156,7 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx"
+        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx_unknown"
       }
 
       env {
@@ -80,115 +184,7 @@ job "awx" {
         memory = 1000 
       }
 
-    } # END task
-
-    task "awxtask" {
-      driver = "docker"
-      config {
-        image = "ansible/awx_task:11.2.0"
-        hostname = "awxtask"
-        volumes = [
-          "local/SECRET_KEY:/etc/tower/SECRET_KEY",
-          "local/environment.sh:/etc/tower/conf.d/environment.sh",
-          "local/credentials.py:/etc/tower/conf.d/credentials.py",
-          "/awx/projects:/var/lib/awx/projects"
-        ]
-      }
-
-      # Required on disk. Will download all files to default allocation folder
-      artifact {
-        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx"
-      }
-
-      env {
-        AWX_ADMIN_USER     = "admin"
-        AWX_ADMIN_PASSWORD = "password"
-
-        DATABASE_NAME     = "awx"
-        DATABASE_USER     = "awx"
-        DATABASE_PASSWORD = "awxpass"
-        DATABASE_HOST     = "${NOMAD_HOST_IP_postgres}"
-        DATABASE_PORT     = "${NOMAD_PORT_postgres}"
-
-        RABBITMQ_VHOST      = "awx"
-        RABBITMQ_USER       = "awx"
-        RABBITMQ_PASSWORD   = "awx_rabbit"
-        RABBITMQ_HOST       = "${NOMAD_HOST_IP_rabbitmq_amqp}"
-        RABBITMQ_PORT       = "${NOMAD_PORT_rabbitmq_amqp}"
-
-        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
-      }
-
-      resources {
-        cpu    = 300
-        memory = 300
-      }
-
-    } # END task/awx
-
-
-    task "rabbitmq" {
-      driver = "docker"
-      config {
-        image = "ansible/awx_rabbitmq:3.7.4"
-        ports = ["rabbitmq_amqp", "rabbitmq_cluster", "rabbitmq_admin"]
-      }
-
-      env {
-        RABBITMQ_DEFAULT_VHOST = "awx"
-        RABBITMQ_DEFAULT_USER  = "awx"
-        RABBITMQ_DEFAULT_PASS  = "awx_rabbit"
-        RABBITMQ_ERLANG_COOKIE = "cookiemonster"
-        RABBITMQ_NODE_PORT     = "5672"
-      }
-
-      resources {
-        cpu    = 125
-        memory = 250        
-      }
-
-    } # END task/rabbitmq
-
-
-    task "memcached" {
-      driver = "docker"
-      config {
-        image = "memcached:alpine"
-        ports = ["memcached"]
-      }
-
-      resources {
-        cpu    = 100
-        memory = 100
-      }
- 
-    } # END task/memcached
-
-    task "postgres" {
-      driver = "docker"
-      config {
-        image = "postgres:10"
-        hostname="postgres"
-        ports = ["postgres"]
-        volumes = [
-          "/awx/postgres/10/data:/var/lib/postgresql/data/pgdata",
-        ]
-      }
-
-      resources {
-        cpu    = 200
-        memory = 200
-      }
-
-      env {
-        POSTGRES_USER     = "awx"
-        POSTGRES_PASSWORD = "awxpass"
-        POSTGRES_DB       = "awx"
-        PGDATA            = "/var/lib/postgresql/data/pgdata"
-      }
-
-    } # END task
+    } # end task awx_web
 
     task "adminer" {
       driver = "docker"
@@ -206,23 +202,7 @@ job "awx" {
         memory = 100
       }
 
-    } # END task/adminer
+    } # end task adminer
 
-  } # END group
-} # END job
-
-
-#??? not work
-#echo "aabbcc" > SECRET_KEY
-#docker cp SECRET_KEY 931efe47a463:/etc/tower/SECRET_KEY
-
-
-##You must therefore manually connect to your AWX Web pod and run the following command:
-#awx-manage migrate --noinput
-
-##Check open ports without netstat
-#declare -a array=($(tail -n +2 /proc/net/tcp | cut -d":" -f"3"|cut -d" " -f"1")) && for port in ${array[@]}; do echo $((0x$port)); done
-#declare -a array=($(tail -n +2 /proc/net/tcp | cut -d":" -f"3"|cut -d" " -f"1")) && for port in ${array[@]}; do echo $((0x$port)); done | sort | uniq
-
-##Connect to PostgreSQL
-#psql -U awx -h 192.168.56.62
+  } # end group
+} # end job

@@ -1,7 +1,0 @@
-##Config files for AWX with redis
-environment.sh
-credentials.py
-docker-compose.yml
-nginx.conf
-redis.conf
-

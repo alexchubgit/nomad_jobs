@@ -11,8 +11,8 @@ DATABASES = {
 }
 
 BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(
-    "awx",
-    "awx_rabbit",
+    "guest",
+    "awxpass",
     "192.168.56.62",
     "5672",
     "awx")
