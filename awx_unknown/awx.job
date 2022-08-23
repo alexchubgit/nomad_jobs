@@ -109,27 +109,24 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx_unknown"
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_unknown"
       }
 
       env {
-        AWX_ADMIN_USER     = "admin"
-        AWX_ADMIN_PASSWORD = "password"
-
         DATABASE_NAME     = "awx"
         DATABASE_USER     = "awx"
         DATABASE_PASSWORD = "awxpass"
         DATABASE_HOST     = "${NOMAD_HOST_IP_postgres}"
         DATABASE_PORT     = "${NOMAD_PORT_postgres}"
 
-        RABBITMQ_VHOST      = "awx"
-        RABBITMQ_USER       = "awx"
-        RABBITMQ_PASSWORD   = "awx_rabbit"
+        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
+        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
+
         RABBITMQ_HOST       = "${NOMAD_HOST_IP_rabbitmq_amqp}"
         RABBITMQ_PORT       = "${NOMAD_PORT_rabbitmq_amqp}"
 
-        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
+        AWX_ADMIN_USER     = "admin"
+        AWX_ADMIN_PASSWORD = "password"
       }
 
       resources {
@@ -156,27 +153,24 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_jobs.git//awx_unknown"
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_unknown"
       }
 
       env {
-        AWX_ADMIN_USER     = "admin"
-        AWX_ADMIN_PASSWORD = "password"
-
         DATABASE_NAME     = "awx"
         DATABASE_USER     = "awx"
         DATABASE_PASSWORD = "awxpass"
         DATABASE_HOST     = "${NOMAD_HOST_IP_postgres}"
         DATABASE_PORT     = "${NOMAD_PORT_postgres}"
 
-        RABBITMQ_VHOST      = "awx"
-        RABBITMQ_USER       = "awx"
-        RABBITMQ_PASSWORD   = "awx_rabbit"
+        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
+        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
+
         RABBITMQ_HOST       = "${NOMAD_HOST_IP_rabbitmq_amqp}"
         RABBITMQ_PORT       = "${NOMAD_PORT_rabbitmq_amqp}"
 
-        MEMCACHED_HOST      = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT      = "${NOMAD_PORT_memcached}"
+        AWX_ADMIN_USER     = "admin"
+        AWX_ADMIN_PASSWORD = "password"
       }
 
       resources {
