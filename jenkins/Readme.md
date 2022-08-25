@@ -38,3 +38,9 @@ docker build - < Dockerfile -t alexchub/jenkins-ssh-agent:latest-jdk11)
 
 # this is the most important command
 CMD chmod 777 /var/run/docker.sock
+
+
+# Необходимо добавить информацию о первоначальной настройке
+##
+##
+##

@@ -73,7 +73,7 @@ job "jenkins" {
 
       resources {
         cpu    = 1000  # MHz
-        memory = 2000 # Mb
+        memory = 1000 # Mb Before 2000 
       }
 
     } # task end    
