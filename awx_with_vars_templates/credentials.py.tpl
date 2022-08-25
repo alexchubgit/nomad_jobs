@@ -18,9 +18,11 @@ BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(
     "{{ env "RABBITMQ_VHOST" }}")
 
 CHANNEL_LAYERS = {
-    'default': {'BACKEND': 'asgi_amqp.AMQPChannelLayer',
+    'default': {
+                'BACKEND': 'asgi_amqp.AMQPChannelLayer',
                 'ROUTING': 'awx.main.routing.channel_routing',
-                'CONFIG': {'url': BROKER_URL}}
+                'CONFIG': {'url': BROKER_URL}
+               }
 }
 
 CACHES = {
