@@ -30,7 +30,7 @@ job "jenkins_agent" {
 
       driver = "docker"
       config {
-        image = "alexchub/jenkins-ssh-agent:latest-jdk11"
+        image = "alexchub/jenkins-agent-ssh:latest-jdk11"
         auth {
           username = "alexchub"
           password = "618a851c-2b1a-4485-994c-fb48b70407fc"

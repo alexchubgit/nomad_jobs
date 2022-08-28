@@ -19,8 +19,9 @@
 
 
 # CLIENT
-# Create my own docker image (Dockerfile and then 
-docker build - < Dockerfile -t alexchub/jenkins-ssh-agent:latest-jdk11)
+# Create my own docker image (Dockerfile and then... ) 
+docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
+docker push alexchub/jenkins-agent-ssh:latest-jdk11
 
 # image = "jenkins/ssh-agent:latest-jdk11"
 

@@ -4,7 +4,7 @@ USER root
 
 # Install git, sudo, vim by jenkins docker client
 RUN apt-get update
-RUN apt-get install -y git sudo vim
+RUN apt-get install -y git sudo vim curl
 
 # Allowing jenkins user to run sudo commands
 RUN echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
