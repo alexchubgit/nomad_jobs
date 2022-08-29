@@ -38,10 +38,6 @@ job "jenkins" {
           password = ""
         }
         ports = ["http", "agents"]
-        volumes = [
-            "/var/run/docker.sock:/var/run/docker.sock",
-            "/bin/docker:/usr/bin/docker"
-        ]
         mount {
           type = "volume"
           target = "/var/jenkins_home"
