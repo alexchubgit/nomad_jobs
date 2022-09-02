@@ -7,14 +7,14 @@
 - '/etc/nginx/nginx.conf'
 
 **Download as artifact, or create in some other way**
-```python
+```go
 artifact {
    source = "git::https://github.com/alexchubgit/nomad_job.git//awx_with_vars_templates"
 }
 ```
 
 **For working with template need this code**
-```python
+```go
 template {
   source        = "local/credentials.py.tpl"
   destination   = "local/credentials.py"
@@ -24,7 +24,7 @@ template {
 ```
 
 **And then you need to use docker volumes**
-```python
+```go
 volumes = [
   "local/SECRET_KEY:/etc/tower/SECRET_KEY",
   "local/environment.sh:/etc/tower/conf.d/environment.sh",
@@ -34,7 +34,7 @@ volumes = [
 ```
 
 **You can also change your login and password for POSTGRESQL, RABBITMQ and AWX**
-```python
+```go
 env {
   POSTGRES_USER     = "awx"
   POSTGRES_PASSWORD = "awxpass"
