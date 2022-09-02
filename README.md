@@ -46,7 +46,7 @@ declare -a array=($(tail -n +2 /proc/net/tcp | cut -d":" -f"3"|cut -d" " -f"1"))
 
 ## Getting an ip address without entering the container (получение ip адреса не заходя в контейнер)
 ```bash
-docker exec prometheus-0a66754f-5c40-3027-0601-7e0b4d5fb87d ip addr show | grep -oE "inet [^ ]+"
+docker exec CONTAINER_ID ip addr show | grep -oE "inet [^ ]+"
 ```
 
 ## Adding file into docker container
@@ -55,5 +55,5 @@ echo "aabbcc" > SECRET_KEY
 ```
 
 ```bash
-docker cp SECRET_KEY 931efe47a463:/etc/tower/SECRET_KEY
+docker cp SECRET_KEY CONTAINER_ID:/etc/tower/SECRET_KEY
 ```
