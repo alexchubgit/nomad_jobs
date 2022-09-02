@@ -11,19 +11,20 @@
 
 ключ надо создать докере мастера и передать в агент
 `docker ps`
-`docker exec -it master ssh-keygen -t rsa -C ""`
+`docker exec -it 28642fb7666d ssh-keygen -t rsa -C ""`
 
 
 get public key from server for using inside agent
 
 `docker exec -it 28642fb7666d cat /var/jenkins_home/.ssh/id_rsa`
+`cat /mnt/jenkins/server/.ssh/id_rsa`
 
       env {
         JENKINS_AGENT_SSH_PUBKEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDIMFOXMVYy8wESyUa5ko09HBz4yCHD0/Vrb/EoO1YPpoDL7+q48Tq77nKlczgu3SPhDO98r0w60EHrhuDSaL2sLIqH2jNmTV4GzGwi/4TkyUvy60WR1TRRtN1sT771W5ED28x5MOIZZ38kul5QQD5CokI/JqWiotywOOnzj14y1ymzMCIiz3bUHrEFOTWjXlz31wpH+ahCk9bNeFOAPyRPwtyEM/2eAkC/WOxrTDiI8FPMRDoFfPWkxnJsq4+V3UjQPrt9Sa335aRbD0Fqo9WAauXk6mKLjUeF97oBydWbnnSY4LwDrLS+JKMrXL9E88cqMFWmsOewRfjdyThKql0+Q7wJVjo3eBn++/3JZgAoiawuFQOZTuPpZNiRcdOIsFSAKAInA8B/Fg+4UPlQxqE417K9p3o0jvyKVleUG36uFZpCDvFXUJ9OHpX5beQfWJ89x7h+AMCSdFxm4HrNc3Ogz/gkEsQ0v+8mrQA+by9JMnP9Q31PIiexMGbdgJLg9fs="
       }
 
 get secret key
-`docker exec -it 8f0d02845ee4 cat ~/.jenkins/secrets/initialAdminPassword`
+`docker exec -it 28642fb7666d cat ~/.jenkins/secrets/initialAdminPassword`
 
 
 ```
