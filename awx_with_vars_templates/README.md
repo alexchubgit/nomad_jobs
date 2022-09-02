@@ -60,14 +60,17 @@ env {
 ## Using
 
 `nomad job plan awx.job`
+
 `nomad job run -check-index 0 awx.job`
 
 **If nomad job already exits need to execute this command**
+
 `nomad job stop -purge awx`
 
 **If low allocation memory for container <500Mb will be problems with processes inside container awx_task**
 
 
 ## Call AWX template with cURL
+
 `curl -f -k -H 'Content-Type: application/json' -XPOST --user admin:password http://192.168.56.62/api/v2/job_templates/awx_template_name/launch/`
 
