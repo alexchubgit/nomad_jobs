@@ -45,8 +45,7 @@ Avoid typing sudo in command line
 RUN echo "alias docker='sudo docker '" >> /home/jenkins/.bashrc
 ```
 
-**Create my own docker image from Dockerfile** 
-
+**Create my own docker image from Dockerfile**
 ```bash
 docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
 ```
@@ -59,16 +58,12 @@ docker login
 docker push alexchub/jenkins-agent-ssh:latest-jdk11
 ```
 
-
-
 **Generate ssh key in Jenkins server container**
-
 ```bash
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
 **Get public key from server for using inside agent**
-
 ```bash
 docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa
 ```
@@ -77,6 +72,7 @@ docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa
 cat /mnt/jenkins/server/.ssh/id_rsa
 ```
 
+**Add the public key to the JENKINS_AGENT_SSH_PUBKEY environment variable**
 ```go
 env {
   JENKINS_AGENT_SSH_PUBKEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDIMFOXMVYy8wESyUa5ko09HBz4yCHD0/Vrb/EoO1YPpoDL7+q48Tq77nKlczgu3SPhDO98r0w60EHrhuDSaL2sLIqH2jNmTV4GzGwi/4TkyUvy60WR1TRRtN1sT771W5ED28x5MOIZZ38kul5QQD5CokI/JqWiotywOOnzj14y1ymzMCIiz3bUHrEFOTWjXlz31wpH+ahCk9bNeFOAPyRPwtyEM/2eAkC/WOxrTDiI8FPMRDoFfPWkxnJsq4+V3UjQPrt9Sa335aRbD0Fqo9WAauXk6mKLjUeF97oBydWbnnSY4LwDrLS+JKMrXL9E88cqMFWmsOewRfjdyThKql0+Q7wJVjo3eBn++/3JZgAoiawuFQOZTuPpZNiRcdOIsFSAKAInA8B/Fg+4UPlQxqE417K9p3o0jvyKVleUG36uFZpCDvFXUJ9OHpX5beQfWJ89x7h+AMCSdFxm4HrNc3Ogz/gkEsQ0v+8mrQA+by9JMnP9Q31PIiexMGbdgJLg9fs="
@@ -109,7 +105,6 @@ chmod 777 /var/run/docker.sock
 ## Setting
 
 **Get secret key**
-
 ```bash
 docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 ```
