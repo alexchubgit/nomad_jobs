@@ -58,7 +58,6 @@ env {
 ```
 
 ## Using
-
 ```bash
 nomad job plan awx.job
 ```
@@ -68,7 +67,6 @@ nomad job run -check-index 0 awx.job
 ```
 
 **If nomad job already exits need to execute this command**
-
 ```bash
 nomad job stop -purge awx
 ```
@@ -77,7 +75,6 @@ nomad job stop -purge awx
 
 
 ## Call AWX template with cURL
-
 ```bash
 curl -f -k -H 'Content-Type: application/json' -XPOST --user admin:password http://192.168.56.62/api/v2/job_templates/awx_template_name/launch/
 ```
