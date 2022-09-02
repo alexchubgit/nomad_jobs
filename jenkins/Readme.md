@@ -114,21 +114,23 @@ chmod 777 /var/run/docker.sock
 docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 ```
 
-**Plugins**
+```bash
+cat /mnt/jenkins/server/secrets/initialAdminPassword
+```
+
+## Plugins
+
+**List Plugins**
 * Plugin Blue Ocean
 * Plugin Docker Pipeline
 
-
-
-
-
-
+**Or you can use image with blue ocean plugin**
 ```dockerfile
 image = "jenkinsci/blueocean"
+```
 
-RUN jenkins-plugin-cli --plugins "blueocean:1.25.5 docker-workflow:1.28"
-
-command = "/bin/bash"
-args = ["jenkins-plugin-cli --plugins 'blueocean:1.25.5'"]
+**Or you can create your own Dockerfile with plugins**
+```dockerfile
+RUN jenkins-plugin-cli --plugins "blueocean:1.25.5"
 ```
 
