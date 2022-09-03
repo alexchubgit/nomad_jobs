@@ -4,6 +4,24 @@
 **Remember! Your hashicorp cluster must exists when you are starting nomad jobs**
 
 ## Jenkins server
+**In a jenkins nomad job you can change the mountpoint `/mnt/jenkins/server/`**
+```go
+mount {
+  type = "volume"
+  target = "/var/jenkins_home"
+  source = "jenkins-home"
+  readonly = false
+  volume_options {
+    no_copy = false
+    driver_config {
+      name = "local-persist"
+      options = {
+        mountpoint = "/mnt/jenkins/server/"
+      }
+    }
+  }
+}
+```
 
 ## Using
 ```bash
