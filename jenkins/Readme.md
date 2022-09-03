@@ -133,7 +133,7 @@ cat /mnt/jenkins/server/secrets/initialAdminPassword
 
 ## Plugins
 
-**Plugin list**
+**List of plugins to install**
 * Plugin Blue Ocean
 * Plugin Docker Pipeline
 
