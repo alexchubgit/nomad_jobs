@@ -21,7 +21,7 @@ nomad job stop -purge jenkins
 
 
 ## Jenkins agent
-For starting jenkins agent need
+**For starting jenkins agent need to create your own docker image from Dockerfile**
 
 Image for Dockerfile
 ```dockerfile
@@ -45,7 +45,7 @@ Avoid typing sudo in command line
 RUN echo "alias docker='sudo docker '" >> /home/jenkins/.bashrc
 ```
 
-**Create my own docker image from Dockerfile**
+**Build and push docker image from Dockerfile**
 ```bash
 docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
 ```
