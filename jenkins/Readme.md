@@ -115,7 +115,7 @@ cat /mnt/jenkins/server/secrets/initialAdminPassword
 
 ## Plugins
 
-**List Plugins**
+**Plugin list**
 * Plugin Blue Ocean
 * Plugin Docker Pipeline
 
