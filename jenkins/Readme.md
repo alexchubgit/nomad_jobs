@@ -1,7 +1,5 @@
-
 ## Description
-
-**Remember! Your hashicorp cluster must exists when you are starting nomad jobs**
+Jenkins is an open source continuous integration/continuous delivery and deployment (CI/CD) automation software DevOps tool written in the Java programming language.
 
 ## Jenkins server
 **In a jenkins nomad job you can change the mountpoint `/mnt/jenkins/server/`**

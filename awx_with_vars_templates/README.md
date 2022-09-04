@@ -1,5 +1,8 @@
+## Description
+AWX is an open source web application that provides a user interface, REST API, and task engine for Ansible. It's the open source version of the Ansible Tower. The AWX allows you to manage Ansible playbooks, inventories, and schedule jobs to run using the web interface.
+
 ## Resources
-**These files are required by awx.**
+**These files are required by AWX**
 
 - '/etc/tower/conf.d/credentials.py.tpl'
 - '/etc/tower/SECRET_KEY'

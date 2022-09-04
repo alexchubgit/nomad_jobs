@@ -1,6 +1,5 @@
 ## Description
-
-This repo contants different nomad jobs
+The Nomad job specification (or "jobspec" for short) defines the schema for Nomad jobs. Nomad jobs are specified in HCL, which aims to strike a balance between human readable and editable, and machine-friendly.
 
 ## Connect to PostgreSQL
 ```bash
