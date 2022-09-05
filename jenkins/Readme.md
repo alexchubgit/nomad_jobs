@@ -2,24 +2,6 @@
 Jenkins is an open source continuous integration/continuous delivery and deployment (CI/CD) automation software DevOps tool written in the Java programming language.
 
 ## Jenkins server
-**In a jenkins nomad job you can change the mountpoint `/mnt/jenkins/server/`**
-```go
-mount {
-  type = "volume"
-  target = "/var/jenkins_home"
-  source = "jenkins-home"
-  readonly = false
-  volume_options {
-    no_copy = false
-    driver_config {
-      name = "local-persist"
-      options = {
-        mountpoint = "/mnt/jenkins/server/"
-      }
-    }
-  }
-}
-```
 
 ## Using
 ```bash
