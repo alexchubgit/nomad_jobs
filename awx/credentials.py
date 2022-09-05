@@ -5,7 +5,7 @@ DATABASES = {
         'NAME': "awx",
         'USER': "awx",
         'PASSWORD': "awxpass",
-        'HOST': "192.168.56.62",
+        'HOST': "postgres",
         'PORT': "5432",
     }
 }
@@ -13,10 +13,10 @@ DATABASES = {
 BROKER_URL = 'amqp://{}:{}@{}:{}/{}'.format(
     "guest",
     "awxpass",
-    "192.168.56.62",
+    "rabbitmq",
     "5672",
     "awx")
-
+    
 CHANNEL_LAYERS = {
     'default': {'BACKEND': 'asgi_amqp.AMQPChannelLayer',
                 'ROUTING': 'awx.main.routing.channel_routing',
@@ -26,7 +26,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{}:{}'.format("192.168.56.62", "11211")
+        'LOCATION': '{}:{}'.format("memcached", "11211")
     },
     'ephemeral': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
