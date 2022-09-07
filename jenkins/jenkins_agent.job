@@ -16,6 +16,9 @@ job "jenkins_agent" {
         static = 2222
         to = 22
       }
+      port "dind" {
+        static = 2375
+      }
     }
 
     update {
@@ -30,16 +33,20 @@ job "jenkins_agent" {
 
       driver = "docker"
       config {
-        image = "alexchub/jenkins-agent-ssh-docker:latest-jdk11"
+        image = "alexchub/jenkins-agent-ssh:latest-jdk11"
         auth {
           username = "alexchub"
           password = "618a851c-2b1a-4485-994c-fb48b70407fc"
         }
         ports = ["ssh"]
+          volumes = [
+          "/bin/docker:/usr/bin/docker"
+        ]
       }
 
       env {
         JENKINS_AGENT_SSH_PUBKEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDIMFOXMVYy8wESyUa5ko09HBz4yCHD0/Vrb/EoO1YPpoDL7+q48Tq77nKlczgu3SPhDO98r0w60EHrhuDSaL2sLIqH2jNmTV4GzGwi/4TkyUvy60WR1TRRtN1sT771W5ED28x5MOIZZ38kul5QQD5CokI/JqWiotywOOnzj14y1ymzMCIiz3bUHrEFOTWjXlz31wpH+ahCk9bNeFOAPyRPwtyEM/2eAkC/WOxrTDiI8FPMRDoFfPWkxnJsq4+V3UjQPrt9Sa335aRbD0Fqo9WAauXk6mKLjUeF97oBydWbnnSY4LwDrLS+JKMrXL9E88cqMFWmsOewRfjdyThKql0+Q7wJVjo3eBn++/3JZgAoiawuFQOZTuPpZNiRcdOIsFSAKAInA8B/Fg+4UPlQxqE417K9p3o0jvyKVleUG36uFZpCDvFXUJ9OHpX5beQfWJ89x7h+AMCSdFxm4HrNc3Ogz/gkEsQ0v+8mrQA+by9JMnP9Q31PIiexMGbdgJLg9fs="
+        DOCKER_HOST="tcp://${NOMAD_HOST_IP_dind}:2375"
       }
 
       service {
@@ -52,6 +59,26 @@ job "jenkins_agent" {
           interval = "10s"
           timeout  = "5s"
         }
+      }
+
+      resources {
+        cpu    = 300  # MHz
+        memory = 300 # Mb
+      }
+
+    } # task end
+
+    task "docker_dind" {
+
+      driver = "docker"
+      config {
+        image = "docker:dind"
+        ports = ["dind"]
+        privileged = "true"
+      }
+
+      env {
+        DOCKER_TLS_CERTDIR=""
       }
 
       resources {
