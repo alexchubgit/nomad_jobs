@@ -1,23 +1,14 @@
-## Jenkins and Jenkins agent on Nomad
-Этот номад джоб запускает jenkins и jenkins agent в контейнере докер
+# Jenkins and Jenkins agent on Nomad
+These nomad jobs run Jenkins and Jenkins agent in docker containers
 
-## Before You Begin
-Before you begin we recommend you read about the basic building blocks that assemble a 
-
-- 
-- 
-
-## Prerequisites
-
+# Prerequisites
+Before you begin we recommend you read about the basic building blocks 
 - Docker 
 - Nomad
 
-## Using Jenkins server
+# Creating Jenkins server
 
-```bash
-nomad job plan jenkins.job
-```
-
+**Run Jenkins server**
 ```bash
 nomad job run jenkins.job
 ```
@@ -27,8 +18,7 @@ nomad job run jenkins.job
 nomad job stop -purge jenkins
 ```
 
-**Взять ключ для настройки дженкинс сервера и войти**
-**Get secret key**
+**Take the secret key to configure the Jenkins server and enter the UI**
 ```bash
 docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 ```
@@ -37,20 +27,21 @@ docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 cat /mnt/jenkins/server/secrets/initialAdminPassword
 ```
 
+**Unlocking Jenkins** you can see in
+[documentation](https://www.jenkins.io/doc/book/installing/docker/#unlocking-jenkins)
 
-**Generate ssh key in Jenkins server container**
+
+**Generate an SSH key pair in the Jenkins server container**
 ```bash
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
-**Ссылка на документацию jenkins, как добавить ключ**
-**Add private key inside UI**
+**Adding private key inside UI** you can see in 
+[documentation](https://www.jenkins.io/doc/book/using/using-agents/#generating-an-ssh-key-pair)
 
 
-
-## Using Jenkins agents
-**For starting jenkins agent need to create your own docker image from Dockerfile.**
-**Build and push docker image from Dockerfile**
+# Creating Jenkins agents
+**Build and push your own docker image from Dockerfile**
 ```bash
 docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
 ```
@@ -63,18 +54,13 @@ docker login
 docker push alexchub/jenkins-agent-ssh:latest-jdk11
 ```
 
-**Generate ssh key in Jenkins server container**
-```bash
-docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
-```
-
 **Get public key from server for using inside agent**
 ```bash
-docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa
+docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa.pub
 ```
 
 ```bash
-cat /mnt/jenkins/server/.ssh/id_rsa
+cat /mnt/jenkins/server/.ssh/id_rsa.pub
 ```
 
 **Add the public key to the JENKINS_AGENT_SSH_PUBKEY environment variable**
@@ -84,11 +70,7 @@ env {
 }
 ```
 
-## Using Jenkins agent
-```bash
-nomad job plan jenkins_agent.job
-```
-
+**Run Jenkins agent**
 ```bash
 nomad job run jenkins_agent.job
 ```
@@ -97,6 +79,11 @@ nomad job run jenkins_agent.job
 ```bash
 nomad job stop -purge jenkins_agent
 ```
+
+
+**Setup up the `agent` on Jenkins** you can see in 
+[documentation](https://www.jenkins.io/doc/book/using/using-agents/#setup-up-the-agent1-on-jenkins)
+
 
 
 **If you want build docker images then this is the most important command \
@@ -108,7 +95,7 @@ chmod 777 /var/run/docker.sock
 
 
 
-## Plugins
+# Plugins
 
 **List of plugins to install**
 * Plugin Blue Ocean
@@ -124,11 +111,3 @@ image = "jenkinsci/blueocean"
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.5"
 ```
 
-
-
-
-НОВОЕ
-
-sudo docker build - < Dockerfile_DIND -t alexchub/jenkins-agent-ssh-docker:latest-jdk11
-sudo docker login
-sudo docker push alexchub/jenkins-agent-ssh-docker:latest-jdk11
