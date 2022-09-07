@@ -68,7 +68,7 @@ env {
 }
 ```
 
-## Using Jenkins agent
+**Starting Jenkins agent**
 ```bash
 nomad job run jenkins_agent.job
 ```
