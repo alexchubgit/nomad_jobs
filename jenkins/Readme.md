@@ -30,8 +30,8 @@ cat /mnt/jenkins/server/secrets/initialAdminPassword
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
-**Add private key inside UI** 
-[link](https://www.jenkins.io/doc/book/using/using-agents/#generating-an-ssh-key-pair)
+**Adding private key inside UI** you can see in 
+[documentation](https://www.jenkins.io/doc/book/using/using-agents/#generating-an-ssh-key-pair)
 
 
 ## Using Jenkins agents
@@ -50,11 +50,11 @@ docker push alexchub/jenkins-agent-ssh:latest-jdk11
 
 **Get public key from server for using inside agent**
 ```bash
-docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa
+docker exec -it CONTAINER_ID cat /var/jenkins_home/.ssh/id_rsa.pub
 ```
 
 ```bash
-cat /mnt/jenkins/server/.ssh/id_rsa
+cat /mnt/jenkins/server/.ssh/id_rsa.pub
 ```
 
 **Add the public key to the JENKINS_AGENT_SSH_PUBKEY environment variable**
