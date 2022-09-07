@@ -30,16 +30,12 @@ job "jenkins_agent" {
 
       driver = "docker"
       config {
-        image = "alexchub/jenkins-agent-ssh:latest-jdk11"
+        image = "alexchub/jenkins-agent-ssh-docker:latest-jdk11"
         auth {
           username = "alexchub"
           password = "618a851c-2b1a-4485-994c-fb48b70407fc"
         }
         ports = ["ssh"]
-        volumes = [
-            "/var/run/docker.sock:/var/run/docker.sock",
-            "/bin/docker:/usr/bin/docker"
-        ]
       }
 
       env {
