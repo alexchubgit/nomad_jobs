@@ -1,23 +1,12 @@
 ## AWX (Ansible Tower) on Nomad
-AWX is an open source web application that provides a user interface, REST API, and task engine for Ansible. It's the open source version of the Ansible Tower. The AWX allows you to manage Ansible playbooks, inventories, and schedule jobs to run using the web interface.
-
-## Before You Begin
-Before you begin we recommend you read about the basic building blocks that assemble a 
-
-- 
-- 
+This nomad job runs AWX in a docker container 
 
 ## Prerequisites
-
+Before you begin we recommend you read about the basic building blocks 
 - Docker 
 - Nomad
 
-
 ## Using
-```bash
-nomad job plan awx.job
-```
-
 ```bash
 nomad job run awx.job
 ```
@@ -37,8 +26,6 @@ nomad job stop -purge awx
 - '/etc/tower/SECRET_KEY'
 - '/etc/tower/conf.d/environment.sh'
 - '/etc/nginx/nginx.conf'
-
-
 
 
 **You can also change your login and password for POSTGRESQL, RABBITMQ and AWX**
@@ -64,8 +51,6 @@ env {
   AWX_ADMIN_PASSWORD = "password"
 }
 ```
-
-
 
 ## Call AWX template with cURL
 ```bash

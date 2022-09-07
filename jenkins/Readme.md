@@ -1,23 +1,12 @@
 ## Jenkins and Jenkins agent on Nomad
-Этот номад джоб запускает jenkins и jenkins agent в контейнере докер
-
-## Before You Begin
-Before you begin we recommend you read about the basic building blocks that assemble a 
-
-- 
-- 
+These nomad jobs run Jenkins and Jenkins agent in docker containers
 
 ## Prerequisites
-
+Before you begin we recommend you read about the basic building blocks 
 - Docker 
 - Nomad
 
 ## Using Jenkins server
-
-```bash
-nomad job plan jenkins.job
-```
-
 ```bash
 nomad job run jenkins.job
 ```
@@ -27,8 +16,7 @@ nomad job run jenkins.job
 nomad job stop -purge jenkins
 ```
 
-**Взять ключ для настройки дженкинс сервера и войти**
-**Get secret key**
+**Take the secret key to configure the Jenkins server and enter the UI**
 ```bash
 docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 ```
@@ -37,20 +25,17 @@ docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 cat /mnt/jenkins/server/secrets/initialAdminPassword
 ```
 
-
-**Generate ssh key in Jenkins server container**
+**Generate an SSH key pair in the Jenkins server container**
 ```bash
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
-**Ссылка на документацию jenkins, как добавить ключ**
-**Add private key inside UI**
-
+**Add private key inside UI** 
+[link](https://www.jenkins.io/doc/book/using/using-agents/#generating-an-ssh-key-pair)
 
 
 ## Using Jenkins agents
-**For starting jenkins agent need to create your own docker image from Dockerfile.**
-**Build and push docker image from Dockerfile**
+**Build and push your own docker image from Dockerfile**
 ```bash
 docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
 ```
@@ -61,11 +46,6 @@ docker login
 
 ```bash
 docker push alexchub/jenkins-agent-ssh:latest-jdk11
-```
-
-**Generate ssh key in Jenkins server container**
-```bash
-docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
 **Get public key from server for using inside agent**
@@ -85,10 +65,6 @@ env {
 ```
 
 ## Using Jenkins agent
-```bash
-nomad job plan jenkins_agent.job
-```
-
 ```bash
 nomad job run jenkins_agent.job
 ```
