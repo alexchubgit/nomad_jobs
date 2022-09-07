@@ -25,6 +25,10 @@ docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 cat /mnt/jenkins/server/secrets/initialAdminPassword
 ```
 
+**Unlocking Jenkins** you can see in
+[documentation](https://www.jenkins.io/doc/book/installing/docker/#unlocking-jenkins)
+
+
 **Generate an SSH key pair in the Jenkins server container**
 ```bash
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
