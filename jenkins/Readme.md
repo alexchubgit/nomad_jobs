@@ -111,3 +111,11 @@ image = "jenkinsci/blueocean"
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.5"
 ```
 
+
+
+
+НОВОЕ
+
+sudo docker build - < Dockerfile_DIND -t alexchub/jenkins-agent-ssh-docker:latest-jdk11
+sudo docker login
+sudo docker push alexchub/jenkins-agent-ssh-docker:latest-jdk11
