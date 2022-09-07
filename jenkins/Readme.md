@@ -1,15 +1,25 @@
-## Description
-Jenkins is an open source continuous integration/continuous delivery and deployment (CI/CD) automation software DevOps tool written in the Java programming language.
+## Jenkins and Jenkins agent on Nomad
+Этот номад джоб запускает jenkins и jenkins agent в контейнере докер
 
-## Jenkins server
+## Before You Begin
+Before you begin we recommend you read about the basic building blocks that assemble a 
 
-## Using
+- 
+- 
+
+## Prerequisites
+
+- Docker 
+- Nomad
+
+## Using Jenkins server
+
 ```bash
 nomad job plan jenkins.job
 ```
 
 ```bash
-nomad job run -check-index 0 jenkins.job
+nomad job run jenkins.job
 ```
 
 **If nomad job already exits need to execute this command**
@@ -17,32 +27,29 @@ nomad job run -check-index 0 jenkins.job
 nomad job stop -purge jenkins
 ```
 
-
-## Jenkins agent
-**For starting jenkins agent need to create your own docker image from Dockerfile**
-
-Image for Dockerfile
-```dockerfile
-FROM jenkins/ssh-agent:latest-jdk11
-USER root
+**Взять ключ для настройки дженкинс сервера и войти**
+**Get secret key**
+```bash
+docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
 ```
 
-Install git, sudo, vim, curl by jenkins docker client
-```dockerfile
-RUN apt-get update
-RUN apt-get install -y git sudo vim curl
+```bash
+cat /mnt/jenkins/server/secrets/initialAdminPassword
 ```
 
-Allowing jenkins user to run sudo commands
-```dockerfile
-RUN echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+**Generate ssh key in Jenkins server container**
+```bash
+docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 ```
 
-Avoid typing sudo in command line
-```dockerfile
-RUN echo "alias docker='sudo docker '" >> /home/jenkins/.bashrc
-```
+**Ссылка на документацию jenkins, как добавить ключ**
+**Add private key inside UI**
 
+
+
+## Using Jenkins agents
+**For starting jenkins agent need to create your own docker image from Dockerfile.**
 **Build and push docker image from Dockerfile**
 ```bash
 docker build - < Dockerfile -t alexchub/jenkins-agent-ssh:latest-jdk11
@@ -77,13 +84,13 @@ env {
 }
 ```
 
-## Using
+## Using Jenkins agent
 ```bash
 nomad job plan jenkins_agent.job
 ```
 
 ```bash
-nomad job run -check-index 0 jenkins_agent.job
+nomad job run jenkins_agent.job
 ```
 
 **If nomad job already exits need to execute this command**
@@ -100,16 +107,6 @@ chmod 777 /var/run/docker.sock
 ```
 
 
-## Setting
-
-**Get secret key**
-```bash
-docker exec -it CONTAINER_ID cat ~/.jenkins/secrets/initialAdminPassword
-```
-
-```bash
-cat /mnt/jenkins/server/secrets/initialAdminPassword
-```
 
 ## Plugins
 

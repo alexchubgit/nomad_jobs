@@ -1,40 +1,45 @@
-## Description
+## AWX (Ansible Tower) on Nomad
 AWX is an open source web application that provides a user interface, REST API, and task engine for Ansible. It's the open source version of the Ansible Tower. The AWX allows you to manage Ansible playbooks, inventories, and schedule jobs to run using the web interface.
 
+## Before You Begin
+Before you begin we recommend you read about the basic building blocks that assemble a 
+
+- 
+- 
+
+## Prerequisites
+
+- Docker 
+- Nomad
+
+
+## Using
+```bash
+nomad job plan awx.job
+```
+
+```bash
+nomad job run awx.job
+```
+
+**If nomad job already exits need to execute this command**
+```bash
+nomad job stop -purge awx
+```
+
+**If low allocation memory for container <500Mb will be problems with processes inside container awx_task**
+
+
 ## Resources
-**These files are required by AWX**
+**These files are required by AWX. Download as artifact, or create in some other way**
 
 - '/etc/tower/conf.d/credentials.py.tpl'
 - '/etc/tower/SECRET_KEY'
 - '/etc/tower/conf.d/environment.sh'
 - '/etc/nginx/nginx.conf'
 
-**Download as artifact, or create in some other way**
-```go
-artifact {
-   source = "git::https://github.com/alexchubgit/nomad_job.git//awx_with_vars_templates"
-}
-```
 
-**For working with template need this code**
-```go
-template {
-  source        = "local/credentials.py.tpl"
-  destination   = "local/credentials.py"
-  change_mode   = "signal"
-  change_signal = "SIGINT"
-}
-```
 
-**And then you need to use docker volumes**
-```go
-volumes = [
-  "local/SECRET_KEY:/etc/tower/SECRET_KEY",
-  "local/environment.sh:/etc/tower/conf.d/environment.sh",
-  "local/credentials.py:/etc/tower/conf.d/credentials.py",
-  "/awx/projects:/var/lib/awx/projects"
-]
-```
 
 **You can also change your login and password for POSTGRESQL, RABBITMQ and AWX**
 ```go
@@ -60,21 +65,6 @@ env {
 }
 ```
 
-## Using
-```bash
-nomad job plan awx.job
-```
-
-```bash
-nomad job run -check-index 0 awx.job
-```
-
-**If nomad job already exits need to execute this command**
-```bash
-nomad job stop -purge awx
-```
-
-**If low allocation memory for container <500Mb will be problems with processes inside container awx_task**
 
 
 ## Call AWX template with cURL
