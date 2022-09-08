@@ -82,8 +82,8 @@ job "jenkins_agent" {
       }
 
       resources {
-        cpu    = 300  # MHz
-        memory = 300 # Mb
+        cpu    = 200  # MHz
+        memory = 200 # Mb
       }
 
     } # task end
