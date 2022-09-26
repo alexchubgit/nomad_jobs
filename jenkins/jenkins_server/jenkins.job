@@ -56,10 +56,8 @@ job "jenkins" {
       }
 
       env {
-#        JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
-#        CASC_JENKINS_CONFIG
-#        JENKINS_ADMIN_ID       = admin 
-#        JENKINS_ADMIN_PASSWORD = password
+        JENKINS_ADMIN_ID       = admin 
+        JENKINS_ADMIN_PASSWORD = password
       }
 
       service {
