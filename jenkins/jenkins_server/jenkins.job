@@ -1,0 +1,85 @@
+job "jenkins" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "jenkins" {
+    count = 1
+    network {
+      mode = "host"
+      port "http" {
+        static = 8080
+      }
+      port "agents" {
+        static = 50000
+      }      
+    }
+
+    update {
+      max_parallel      = 1
+      min_healthy_time  = "15s"
+      healthy_deadline  = "15m"
+      progress_deadline = "20m"
+      auto_revert       = false
+    }
+
+    task "jenkins" {
+
+      driver = "docker"
+      config {
+        image = "alexchub/jenkins:jcasc"
+        auth {
+          username = ""
+          password = ""
+        }
+        ports = ["http", "agents"]
+        mount {
+          type = "volume"
+          target = "/var/jenkins_home"
+          source = "jenkins-home"
+          readonly = false
+          volume_options {
+            no_copy = false
+            driver_config {
+              name = "local-persist"
+              options = {
+                mountpoint = "/mnt/jenkins/server/"
+              }
+            }
+          }
+        }
+      }
+
+      env {
+#        JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+#        CASC_JENKINS_CONFIG
+#        JENKINS_ADMIN_ID       = admin 
+#        JENKINS_ADMIN_PASSWORD = password
+      }
+
+      service {
+        tags = ["jenkins", "jenkins.service.consul"]
+        name = "jenkins"
+        port = "http"
+        check {
+          type     = "tcp"
+          port     = "http"
+          interval = "10s"
+          timeout  = "5s"
+        }
+      }
+
+      resources {
+        cpu    = 1000  # MHz
+        memory = 1000 # Mb Before 2000 
+      }
+
+    } # task end    
+  }   # group end
+}     # job end
+
