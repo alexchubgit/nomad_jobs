@@ -32,7 +32,7 @@ job "jenkins_server" {
 
       driver = "docker"
       config {
-        image = "alexchub/jenkins:0.5"
+        image = "alexchub/jenkins:0.1"
         auth {
           username = ""
           password = ""
@@ -56,8 +56,9 @@ job "jenkins_server" {
       }
 
       env {
-        JENKINS_ADMIN_ID       = "admin"
+        JENKINS_ADMIN_ID = "admin"
         JENKINS_ADMIN_PASSWORD = "password"
+        JENKINS_HOME = "/var/jenkins_home"
       }
 
       service {
