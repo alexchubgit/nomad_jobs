@@ -9,7 +9,16 @@ DATABASES = {
         'PORT': "5432",
     }
 }
-    
+
+BROKER_URL = 'redis://redis:6379' 
+
+CHANNEL_LAYERS = {
+    "default": {
+    "BACKEND": "channels_redis.core.RedisChannelLayer", 
+    "CONFIG": {"hosts": [BROKER_URL], "capacity": 10000, "group_expiry": 157784760}
+    } 
+}
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
