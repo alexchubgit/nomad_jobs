@@ -68,10 +68,22 @@ job "awx" {
 
     task "redis" {
       driver = "docker"
+
+      # Required on disk. Will download all files to default allocation folder
+      artifact {
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
+        options {
+          ref = "jenkins_dind_new_images"
+        }
+      }
+
       config {
         image = "redis"
         hostname = "redis"
         ports = ["redis"]
+#        volumes = [
+#          "local/redis.conf:/usr/local/etc/redis/redis.conf"
+#        ]
       }
 
       env {
@@ -83,7 +95,7 @@ job "awx" {
         memory = 300
       }
 
-    } # end task rabbitmq
+    } # end task redis
 
     task "awx_task" {
       driver = "docker"
@@ -91,6 +103,9 @@ job "awx" {
       # Required on disk. Will download all files to default allocation folder
       artifact {
         source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
+        options {
+          ref = "jenkins_dind_new_images"
+        }
       }
 
       template {
@@ -121,6 +136,9 @@ job "awx" {
         MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
         MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
 
+        REDIS_HOST     = "${NOMAD_HOST_IP_redis}"
+        REDIS_PORT     = "${NOMAD_PORT_redis}"
+
         AWX_ADMIN_USER     = "admin"
         AWX_ADMIN_PASSWORD = "password"
       }
@@ -131,55 +149,6 @@ job "awx" {
       }
 
     } # end task awx_task
-
-    task "awx_web" {
-      driver = "docker"
-
-      # Required on disk. Will download all files to default allocation folder
-      artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
-      }
-
-      template {
-        source        = "local/credentials.py.tpl"
-        destination   = "local/credentials.py"
-        change_mode   = "signal"
-        change_signal = "SIGINT"
-      }
-
-      config {
-        image = "ansible/awx_web:11.2.0"
-        hostname = "web"
-        ports = ["http"]
-        volumes = [
-          "local/SECRET_KEY:/etc/tower/SECRET_KEY",
-          "local/environment.sh:/etc/tower/conf.d/environment.sh",
-          "local/credentials.py:/etc/tower/conf.d/credentials.py",
-          "local/nginx.conf:/etc/nginx/nginx.conf",
-          "/awx/projects:/var/lib/awx/projects"
-        ]
-      }
-
-      env {
-        DATABASE_NAME      = "awx"
-        DATABASE_USER      = "awx"
-        DATABASE_PASSWORD  = "awxpass"
-        DATABASE_HOST      = "${NOMAD_HOST_IP_postgres}"
-        DATABASE_PORT      = "${NOMAD_PORT_postgres}"
-
-        MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
-
-        AWX_ADMIN_USER     = "admin"
-        AWX_ADMIN_PASSWORD = "password"
-      }
-
-      resources {
-        cpu    = 1000
-        memory = 1000 
-      }
-
-    } # end task awx_web
 
   } # end group
 } # end job
