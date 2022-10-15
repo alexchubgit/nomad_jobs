@@ -73,7 +73,7 @@ job "awx" {
       artifact {
         source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
         options {
-          ref = "jenkins_dind_new_images"
+          ref = "main"
         }
       }
 
@@ -104,7 +104,7 @@ job "awx" {
       artifact {
         source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
         options {
-          ref = "jenkins_dind_new_images"
+          ref = "main"
         }
       }
 
@@ -157,7 +157,7 @@ job "awx" {
       artifact {
         source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
         options {
-          ref = "jenkins_dind_new_images"
+          ref = "main"
         }
       }
 
