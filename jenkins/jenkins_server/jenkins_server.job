@@ -1,4 +1,4 @@
-job "jenkins" {
+job "jenkins_server" {
 
   datacenters = ["dc1"]
   type        = "service"
@@ -8,7 +8,7 @@ job "jenkins" {
     value     = "linux"
   }
 
-  group "jenkins" {
+  group "jenkins_server" {
     count = 1
     network {
       mode = "host"
@@ -28,11 +28,11 @@ job "jenkins" {
       auto_revert       = false
     }
 
-    task "jenkins" {
+    task "jenkins_server" {
 
       driver = "docker"
       config {
-        image = "jenkins/jenkins:lts-jdk11"
+        image = "alexchub/jenkins:0.1"
         auth {
           username = ""
           password = ""
@@ -53,6 +53,12 @@ job "jenkins" {
             }
           }
         }
+      }
+
+      env {
+        JENKINS_ADMIN_ID = "admin"
+        JENKINS_ADMIN_PASSWORD = "password"
+        JENKINS_HOME = "/var/jenkins_home"
       }
 
       service {

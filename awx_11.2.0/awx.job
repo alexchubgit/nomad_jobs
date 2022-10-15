@@ -17,11 +17,8 @@ job "awx" {
       port "memcached" { 
         static = 11211
       }
-      port "rabbit_ui" {
-        static = 15672
-      }
-      port "rabbit_ampq" {
-        static = 5672
+      port "redis" {
+        static = 6379
       }
       port "http" {
         static = 80
@@ -69,19 +66,28 @@ job "awx" {
  
     } # end task memcached
 
-    task "rabbitmq" {
+    task "redis" {
       driver = "docker"
+
+      # Required on disk. Will download all files to default allocation folder
+      artifact {
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
+        options {
+          ref = "jenkins_dind_new_images"
+        }
+      }
+
       config {
-        image = "ansible/awx_rabbitmq:3.7.4"
-        hostname = "rabbitmq"
-        ports = ["rabbit_ui", "rabbit_ampq"]
+        image = "redis"
+        hostname = "redis"
+        ports = ["redis"]
+#        volumes = [
+#          "local/redis.conf:/usr/local/etc/redis/redis.conf"
+#        ]
       }
 
       env {
-        RABBITMQ_DEFAULT_VHOST = "awx"
-        RABBITMQ_DEFAULT_USER = "guest"
-        RABBITMQ_DEFAULT_PASS = "awxpass"
-        RABBITMQ_ERLANG_COOKIE = cookiemonster
+
       }
 
       resources {
@@ -89,14 +95,17 @@ job "awx" {
         memory = 300
       }
 
-    } # end task rabbitmq
+    } # end task redis
 
     task "awx_task" {
       driver = "docker"
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx"
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
+        options {
+          ref = "jenkins_dind_new_images"
+        }
       }
 
       template {
@@ -107,7 +116,7 @@ job "awx" {
       }
 
       config {
-        image = "ansible/awx_task:9.2.0"
+        image = "ansible/awx_task:11.2.0"
         hostname = "awx"
         volumes = [
           "local/SECRET_KEY:/etc/tower/SECRET_KEY",
@@ -127,11 +136,8 @@ job "awx" {
         MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
         MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
 
-        RABBITMQ_VHOST     = "awx"
-        RABBITMQ_USER      = "guest"
-        RABBITMQ_PASS      = "awxpass"
-        RABBITMQ_HOST      = "${NOMAD_HOST_IP_rabbit_ampq}"
-        RABBITMQ_PORT      = "${NOMAD_PORT_rabbit_ampq}"
+        REDIS_HOST     = "${NOMAD_HOST_IP_redis}"
+        REDIS_PORT     = "${NOMAD_PORT_redis}"
 
         AWX_ADMIN_USER     = "admin"
         AWX_ADMIN_PASSWORD = "password"
@@ -149,7 +155,10 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx"
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
+        options {
+          ref = "jenkins_dind_new_images"
+        }
       }
 
       template {
@@ -160,7 +169,7 @@ job "awx" {
       }
 
       config {
-        image = "ansible/awx_web:9.2.0"
+        image = "ansible/awx_web:11.2.0"
         hostname = "web"
         ports = ["http"]
         volumes = [
@@ -182,11 +191,8 @@ job "awx" {
         MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
         MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
 
-        RABBITMQ_VHOST     = "awx"
-        RABBITMQ_USER      = "guest"
-        RABBITMQ_PASS      = "awxpass"
-        RABBITMQ_HOST      = "${NOMAD_HOST_IP_rabbit_ampq}"
-        RABBITMQ_PORT      = "${NOMAD_PORT_rabbit_ampq}"
+        REDIS_HOST     = "${NOMAD_HOST_IP_redis}"
+        REDIS_PORT     = "${NOMAD_PORT_redis}"
 
         AWX_ADMIN_USER     = "admin"
         AWX_ADMIN_PASSWORD = "password"
