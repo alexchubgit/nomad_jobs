@@ -78,11 +78,8 @@ nomad job run jenkins_agent.job
 nomad job stop -purge jenkins_agent
 ```
 
-
 **Setup up the `agent` on Jenkins** you can see in 
 [documentation](https://www.jenkins.io/doc/book/using/using-agents/#setup-up-the-agent1-on-jenkins)
-
-
 
 **If you want build docker images then this is the most important command \
 This command must be used on a virtual machine or host**
