@@ -29,8 +29,13 @@ cat /mnt/jenkins/server/secrets/initialAdminPassword
 
 **Unlocking Jenkins** you can see in
 [documentation](https://www.jenkins.io/doc/book/installing/docker/#unlocking-jenkins)
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 00c0559 (Added new Readme Jenkins)
 **Generate an SSH key pair in the Jenkins server container**
 ```bash
 docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
@@ -38,8 +43,13 @@ docker exec -it CONTAINER_ID ssh-keygen -t rsa -C ""
 
 **Adding private key inside UI** you can see in 
 [documentation](https://www.jenkins.io/doc/book/using/using-agents/#generating-an-ssh-key-pair)
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 00c0559 (Added new Readme Jenkins)
 # Creating Jenkins agents
 **Build and push your own docker image from Dockerfile**
 ```bash
@@ -111,11 +121,3 @@ image = "jenkinsci/blueocean"
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.5"
 ```
 
-
-
-
-НОВОЕ
-
-sudo docker build - < Dockerfile_DIND -t alexchub/jenkins-agent-ssh-docker:latest-jdk11
-sudo docker login
-sudo docker push alexchub/jenkins-agent-ssh-docker:latest-jdk11
