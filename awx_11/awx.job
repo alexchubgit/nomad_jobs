@@ -70,12 +70,12 @@ job "awx" {
       driver = "docker"
 
       # Required on disk. Will download all files to default allocation folder
-      artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
-        options {
-          ref = "main"
-        }
-      }
+#      artifact {
+#        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11"
+#        options {
+#          ref = "main"
+#        }
+#      }
 
       config {
         image = "redis"
@@ -102,10 +102,10 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
-        options {
-          ref = "main"
-        }
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11"
+#        options {
+#          ref = "main"
+#        }
       }
 
       template {
@@ -155,10 +155,10 @@ job "awx" {
 
       # Required on disk. Will download all files to default allocation folder
       artifact {
-        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11.2.0"
-        options {
-          ref = "main"
-        }
+        source = "git::https://github.com/alexchubgit/nomad_job.git//awx_11"
+#        options {
+#          ref = "main"
+#        }
       }
 
       template {
