@@ -1,0 +1,65 @@
+job "jboss_server" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "jboss_server" {
+    count = 1
+    network {
+      mode = "host"
+      port "http" {
+        static = 8080
+      }
+      port "https" {
+        static = 8443
+      }
+      port "admin" {
+        static = 9990
+      }
+    }
+
+    task "jboss_server" {
+
+      driver = "docker"
+      config {
+        image = "jboss/wildfly"
+        auth {
+          username = ""
+          password = ""
+        }
+        command = "sh"
+        args    = ["-c", "/opt/jboss/wildfly/bin/standalone.sh -bmanagement=0.0.0.0 -b 0.0.0.0"]
+
+        ports = ["http", "https", "admin"]
+        volumes = [
+          "/jboss/wildfly/deploy:/opt/jboss/wildfly/standalone/deployments"
+        ]
+
+      }
+
+      env {
+      }
+
+      resources {
+        cpu    = 1000  # MHz
+        memory = 1000 # Mb Before 2000 
+      }
+
+    } # task end    
+  }   # group end
+}     # job end
+
+
+# /opt/jboss/wildfly/bin/add-user.sh admin password --silent (добавление админа)
+
+# /jboss/wildfly/deploy:/opt/jboss/wildfly/standalone/deployments (место для размещения проекта)
+
+# wildfly/domain/configuration/host.xml (настройки менеджмента)
+
+# sudo docker run -p 8080:8080 -p 9990:9990 -it jboss/wildfly /opt/jboss/wildfly/bin/standalone.sh -bmanagement=0.0.0.0 -b 0.0.0.0
+

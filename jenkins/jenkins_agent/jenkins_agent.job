@@ -39,7 +39,7 @@ job "jenkins_agent" {
           password = "618a851c-2b1a-4485-994c-fb48b70407fc"
         }
         ports = ["ssh"]
-          volumes = [
+        volumes = [
           "/bin/docker:/usr/bin/docker"
         ]
       }
