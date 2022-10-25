@@ -1,0 +1,56 @@
+job "liferay" {
+
+  datacenters = ["dc1"]
+  type        = "service"
+
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
+
+  group "liferay" {
+    count = 1
+
+    ephemeral_disk {
+      migrate = true
+      size    = 2000
+      sticky  = true
+    }
+
+    network {
+      mode = "host"
+      port "http" {
+        static = 8080
+      }
+    }
+
+    task "liferay" {
+
+      driver = "docker"
+      config {
+        image = "liferay/portal:7.1.0-ga1-201809012030"
+        auth {
+          username = ""
+          password = ""
+        }
+
+        ports = ["http"]
+        volumes = [
+          "/liferay/files:/mnt/liferay/files",
+          "/liferay/scripts:/mnt/liferay/scripts",
+          "/liferay/deploy:/mnt/liferay/deploy"
+        ]
+      }
+
+      env {
+      }
+
+      resources {
+        cpu    = 2000  # MHz
+        memory = 2000 # Mb Before 2000 
+      }
+
+    } # task end    
+  }   # group end
+}     # job end
+
