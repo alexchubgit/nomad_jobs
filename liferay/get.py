@@ -1,7 +1,7 @@
 import requests
 import json
 
-response = requests.get("http://192.168.56.62:8080/api/jsonws/user/get-user-by-id?userId=20139", auth=('test@liferay.com', 'password'))
+response = requests.get("http://192.168.56.62:8080/api/jsonws/user/get-user-by-id?userId=20139", auth=('test@liferay.com', 'test'))
 
 print(response.status_code)
 
