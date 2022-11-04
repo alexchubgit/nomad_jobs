@@ -2,4 +2,8 @@
 - hosts: all
   become: true
   tasks:
-  - ping
+  - name: ping without params
+    ping:
+
+  - name: ping with params
+    shell: ping -c 1 -w 2 8.8.8.8
