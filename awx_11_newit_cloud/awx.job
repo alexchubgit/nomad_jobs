@@ -21,8 +21,7 @@ job "awx" {
         static = 6379
       }
       port "http" {
-        static = 8052
-#        to     = 8052
+        to = 8052
       }
     }
 
@@ -166,7 +165,7 @@ CACHES = {
       driver = "docker"
       config {
         image = "ansible/awx_web:11.2.0"
-        hostname = "web"
+        hostname = "awxweb"
         ports = ["http"]
         volumes = [
           "/mnt/mycephfs/apps/config/awx/SECRET_KEY:/etc/tower/SECRET_KEY",
@@ -239,6 +238,19 @@ CACHES = {
       }
 
     } # end task awx_web
+
+
+    service {
+      tags = ["web", "urlprefix-awx.service.simedarby.demo/"]
+      name = "awx"
+      port = "http"
+      check {
+        type = "tcp"
+        port = "http"
+        interval = "30s"
+        timeout = "5s"
+      }
+    }     
 
 
   } # end group
