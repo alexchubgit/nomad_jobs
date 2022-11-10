@@ -26,6 +26,12 @@ job "awx" {
     }
 
     task "postgres" {
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
       driver = "docker"
       config {
         image = "postgres:10"
@@ -51,6 +57,12 @@ job "awx" {
     } # end task postgres
 
     task "memcached" {
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
       driver = "docker"
       config {
         image = "memcached:alpine"
@@ -66,15 +78,17 @@ job "awx" {
     } # end task memcached
 
     task "redis" {
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
       driver = "docker"
       config {
         image = "redis"
         hostname = "redis"
         ports = ["redis"]
-      }
-
-      env {
-
       }
 
       resources {
@@ -160,7 +174,6 @@ CACHES = {
 
     } # end task awx_task
 
-
     task "awx_web" {
       driver = "docker"
       config {
@@ -239,7 +252,6 @@ CACHES = {
 
     } # end task awx_web
 
-
     service {
       tags = ["web", "urlprefix-awx.service.simedarby.demo/"]
       name = "awx"
@@ -251,7 +263,6 @@ CACHES = {
         timeout = "5s"
       }
     }     
-
 
   } # end group
 } # end job

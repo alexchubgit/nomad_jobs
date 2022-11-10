@@ -53,8 +53,29 @@ job "awx" {
 
     } # end task postgres
 
+    task "redis" {
 
-   task "awx_task" {
+      # The dbmigrate task will run BEFORE the puma task in this group.
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
+      driver = "docker"
+      config {
+        image = "redis"
+        hostname = "redis"
+        ports = ["redis"]
+      }
+
+      resources {
+        cpu    = 300
+        memory = 300
+      }
+
+    } # end task redis
+
+    task "awx_task" {
 
       driver = "docker"
       config {
@@ -121,36 +142,6 @@ CHANNEL_LAYERS = {
 
     } # end task awx_task
 
-
-
-    task "redis" {
-
-      # The dbmigrate task will run BEFORE the puma task in this group.
-      lifecycle {
-        hook = "prestart"
-        sidecar = true
-      }
-
-      driver = "docker"
-      config {
-        image = "redis"
-        hostname = "redis"
-        ports = ["redis"]
-      }
-
-      env {
-
-      }
-
-      resources {
-        cpu    = 300
-        memory = 300
-      }
-
-    } # end task redis
-
-
-
     task "awx_web" {
       driver = "docker"
       config {
@@ -216,7 +207,6 @@ CHANNEL_LAYERS = {
 
     } # end task awx_web
 
-
     service {
       tags = ["web", "urlprefix-awx.service.simedarby.demo/"]
       name = "awx"
@@ -228,7 +218,6 @@ CHANNEL_LAYERS = {
         timeout = "5s"
       }
     }
-
 
   } # end group
 } # end job
