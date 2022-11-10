@@ -11,11 +11,8 @@ job "awx" {
   group "awx" {
     count = 1
     network {
-      port "postgres" { 
+      port "postgres" {
         static = 5432
-      }
-      port "memcached" { 
-        static = 11211
       }
       port "redis" {
         static = 6379
@@ -26,13 +23,19 @@ job "awx" {
     }
 
     task "postgres" {
+
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
       driver = "docker"
       config {
-        image = "postgres:10"
+        image = "postgres:12"
         hostname="postgres"
         ports = ["postgres"]
         volumes = [
-          "/mnt/mycephfs/apps/config/awx/postgres/10/data:/var/lib/postgresql/data/pgdata"
+          "/mnt/mycephfs/apps/config/awx/postgres/12/data:/var/lib/postgresql/data/pgdata"
         ]
       }
 
@@ -50,45 +53,15 @@ job "awx" {
 
     } # end task postgres
 
-    task "memcached" {
+
+   task "awx_task" {
+
       driver = "docker"
       config {
-        image = "memcached:alpine"
-        hostname="memcached"
-        ports = ["memcached"]
-      }
-
-      resources {
-        cpu    = 200
-        memory = 200
-      }
- 
-    } # end task memcached
-
-    task "redis" {
-      driver = "docker"
-      config {
-        image = "redis"
-        hostname = "redis"
-        ports = ["redis"]
-      }
-
-      env {
-
-      }
-
-      resources {
-        cpu    = 300
-        memory = 300
-      }
-
-    } # end task redis
-
-    task "awx_task" {
-      driver = "docker"
-      config {
-        image = "ansible/awx_task:11.2.0"
+        image = "ansible/awx:15.0.1"
         hostname = "awx"
+        command = "/bin/bash"
+        args = ["-c", "/usr/bin/launch_awx_task.sh"]
         volumes = [
           "/mnt/mycephfs/apps/config/awx/SECRET_KEY:/etc/tower/SECRET_KEY",
           "/mnt/mycephfs/apps/config/awx/environment.sh:/etc/tower/conf.d/environment.sh",
@@ -114,23 +87,13 @@ DATABASES = {
     }
 }
 
-BROKER_URL = 'redis://{{ env "NOMAD_HOST_IP_redis" }}:6379' 
+BROKER_URL = 'redis://{{ env "NOMAD_HOST_IP_redis" }}:6379'
 
 CHANNEL_LAYERS = {
     "default": {
-    "BACKEND": "channels_redis.core.RedisChannelLayer", 
+    "BACKEND": "channels_redis.core.RedisChannelLayer",
     "CONFIG": {"hosts": [BROKER_URL], "capacity": 10000, "group_expiry": 157784760}
-    } 
-}
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{}:{}'.format("{{ env "NOMAD_HOST_IP_memcached" }}", "{{ env "NOMAD_PORT_memcached" }}")
-    },
-    'ephemeral': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
+    }
 }
 
                         EOH
@@ -143,14 +106,12 @@ CACHES = {
         DATABASE_HOST      = "${NOMAD_HOST_IP_postgres}"
         DATABASE_PORT      = "${NOMAD_PORT_postgres}"
 
-        MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
-
         REDIS_HOST     = "${NOMAD_HOST_IP_redis}"
         REDIS_PORT     = "${NOMAD_PORT_redis}"
 
         AWX_ADMIN_USER     = "admin"
         AWX_ADMIN_PASSWORD = "password"
+
       }
 
       resources {
@@ -161,10 +122,39 @@ CACHES = {
     } # end task awx_task
 
 
+
+    task "redis" {
+
+      # The dbmigrate task will run BEFORE the puma task in this group.
+      lifecycle {
+        hook = "prestart"
+        sidecar = true
+      }
+
+      driver = "docker"
+      config {
+        image = "redis"
+        hostname = "redis"
+        ports = ["redis"]
+      }
+
+      env {
+
+      }
+
+      resources {
+        cpu    = 300
+        memory = 300
+      }
+
+    } # end task redis
+
+
+
     task "awx_web" {
       driver = "docker"
       config {
-        image = "ansible/awx_web:11.2.0"
+        image = "ansible/awx:15.0.1"
         hostname = "awxweb"
         ports = ["http"]
         volumes = [
@@ -193,23 +183,13 @@ DATABASES = {
     }
 }
 
-BROKER_URL = 'redis://{{ env "NOMAD_HOST_IP_redis" }}:6379' 
+BROKER_URL = 'redis://{{ env "NOMAD_HOST_IP_redis" }}:6379'
 
 CHANNEL_LAYERS = {
     "default": {
-    "BACKEND": "channels_redis.core.RedisChannelLayer", 
+    "BACKEND": "channels_redis.core.RedisChannelLayer",
     "CONFIG": {"hosts": [BROKER_URL], "capacity": 10000, "group_expiry": 157784760}
-    } 
-}
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{}:{}'.format("{{ env "NOMAD_HOST_IP_memcached" }}", "{{ env "NOMAD_PORT_memcached" }}")
-    },
-    'ephemeral': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
+    }
 }
 
                         EOH
@@ -222,9 +202,6 @@ CACHES = {
         DATABASE_HOST      = "${NOMAD_HOST_IP_postgres}"
         DATABASE_PORT      = "${NOMAD_PORT_postgres}"
 
-        MEMCACHED_HOST     = "${NOMAD_HOST_IP_memcached}"
-        MEMCACHED_PORT     = "${NOMAD_PORT_memcached}"
-
         REDIS_HOST     = "${NOMAD_HOST_IP_redis}"
         REDIS_PORT     = "${NOMAD_PORT_redis}"
 
@@ -234,7 +211,7 @@ CACHES = {
 
       resources {
         cpu    = 1000
-        memory = 1000 
+        memory = 1000
       }
 
     } # end task awx_web
@@ -250,7 +227,7 @@ CACHES = {
         interval = "30s"
         timeout = "5s"
       }
-    }     
+    }
 
 
   } # end group
