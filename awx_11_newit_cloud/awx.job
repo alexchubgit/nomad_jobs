@@ -34,7 +34,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "postgres:10"
+        image = "registry.service.simedarby.demo/awx/postgres:10"
         hostname="postgres"
         ports = ["postgres"]
         volumes = [
@@ -65,7 +65,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "memcached:alpine"
+        image = "registry.service.simedarby.demo/awx/memcached:alpine"
         hostname="memcached"
         ports = ["memcached"]
       }
@@ -86,7 +86,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "redis"
+        image = "registry.service.simedarby.demo/awx/redis"
         hostname = "redis"
         ports = ["redis"]
       }
@@ -101,7 +101,7 @@ job "awx" {
     task "awx_task" {
       driver = "docker"
       config {
-        image = "ansible/awx_task:11.2.0"
+        image = "registry.service.simedarby.demo/awx/awx_task:11.2.0"
         hostname = "awx"
         volumes = [
           "/mnt/mycephfs/apps/config/awx/SECRET_KEY:/etc/tower/SECRET_KEY",
@@ -177,7 +177,7 @@ CACHES = {
     task "awx_web" {
       driver = "docker"
       config {
-        image = "ansible/awx_web:11.2.0"
+        image = "registry.service.simedarby.demo/awx/awx_web:11.2.0"
         hostname = "awxweb"
         ports = ["http"]
         volumes = [

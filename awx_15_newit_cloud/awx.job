@@ -31,7 +31,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "postgres:12"
+        image = "registry.service.simedarby.demo/awx/postgres:12"
         hostname="postgres"
         ports = ["postgres"]
         volumes = [
@@ -63,7 +63,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "redis"
+        image = "registry.service.simedarby.demo/awx/redis"
         hostname = "redis"
         ports = ["redis"]
       }
@@ -79,7 +79,7 @@ job "awx" {
 
       driver = "docker"
       config {
-        image = "ansible/awx:15.0.1"
+        image = "registry.service.simedarby.demo/awx/awx:15.0.1"
         hostname = "awx"
         command = "/bin/bash"
         args = ["-c", "/usr/bin/launch_awx_task.sh"]
@@ -145,7 +145,7 @@ CHANNEL_LAYERS = {
     task "awx_web" {
       driver = "docker"
       config {
-        image = "ansible/awx:15.0.1"
+        image = "registry.service.simedarby.demo/awx/awx:15.0.1"
         hostname = "awxweb"
         ports = ["http"]
         volumes = [
