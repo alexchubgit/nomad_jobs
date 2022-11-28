@@ -24,8 +24,8 @@ job "mysql-server" {
       }
 
       resources {
-        cpu    = 400
-        memory = 400
+        cpu    = 500
+        memory = 1000
       }
 
       service {
@@ -42,3 +42,5 @@ job "mysql-server" {
     }    
   }
 }
+
+
